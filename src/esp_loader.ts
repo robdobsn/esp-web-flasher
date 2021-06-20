@@ -450,11 +450,6 @@ export class ESPLoader extends EventTarget {
   }
 
   async setBaudrate(baud: number) {
-    if (this._parent) {
-      await this._parent.setBaudrate(baud);
-      return;
-    }
-
     if (this.chipFamily == CHIP_FAMILY_ESP8266) {
       throw new Error("Changing baud rate is not supported on the ESP8266");
     }
@@ -472,19 +467,21 @@ export class ESPLoader extends EventTarget {
       );
     }
 
+    const readLoopRunner = this._parent ? this._parent : this;
+
     try {
       // SerialPort does not allow to be reconfigured while open so we close and re-open
-      this.stopReadLoop = true;
-      await this._reader?.cancel();
-      this._reader?.releaseLock();
-      await this.port.close();
+      readLoopRunner.stopReadLoop = true;
+      await readLoopRunner._reader?.cancel();
+      readLoopRunner._reader?.releaseLock();
+      await readLoopRunner.port.close();
 
       // Reopen Port
-      await this.port.open({ baudRate: baud });
+      await readLoopRunner.port.open({ baudRate: baud });
 
       // Restart Readloop
-      this.stopReadLoop = false;
-      this.readLoop();
+      readLoopRunner.stopReadLoop = false;
+      readLoopRunner.readLoop();
 
       this.logger.log(`Changed baud rate to ${baud}`);
     } catch (e) {
