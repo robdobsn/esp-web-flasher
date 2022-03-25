@@ -1,0 +1,15 @@
+#!/bin/sh
+# Generate new versions that can be exported
+
+# Stop on errors
+set -e
+
+cd "$(dirname "$0")/.."
+
+rm -rf export/patched export/dist
+cp -r ./js export/patched
+echo "export { struct, toByteArray }" >> export/patched/utilities.js
+echo "import { struct, toByteArray} from './utilities.js';" >> export/patched/esptool.js
+echo "export { EspLoader, SlipReadError, FatalError }" >> export/patched/esptool.js
+
+npx rollup -c export/rollup.config.js
