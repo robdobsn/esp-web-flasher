@@ -747,12 +747,12 @@ export class ESPLoader extends EventTarget {
     let timeout = 0;
     let buffer;
 
-    if (!this.IS_STUB) {
+    if (this.IS_STUB) {
       writeSize = size; // stub expects number of bytes here, manages erasing internally
-      timeout = DEFAULT_TIMEOUT;
+      timeout = timeoutPerMb(ERASE_REGION_TIMEOUT_PER_MB, writeSize); // ROM performs the erase up front
     } else {
       writeSize = eraseBlocks * flashWriteSize; // ROM expects rounded up to erase block size
-      timeout = timeoutPerMb(ERASE_REGION_TIMEOUT_PER_MB, writeSize); // ROM performs the erase up front
+      timeout = DEFAULT_TIMEOUT;
     }
     buffer = pack("<IIII", writeSize, numBlocks, flashWriteSize, offset);
 
