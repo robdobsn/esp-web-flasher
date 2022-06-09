@@ -440,13 +440,14 @@ export class ESPLoader extends EventTarget {
         let uncompressedFilesize = binaryData.byteLength;
         let compressedFilesize = 0;
         let dataToFlash;
+        let timeout = DEFAULT_TIMEOUT;
         if (compress) {
             dataToFlash = deflate(new Uint8Array(binaryData), {
                 level: 9,
             }).buffer;
             compressedFilesize = dataToFlash.byteLength;
             this.logger.log(`Writing data with filesize: ${uncompressedFilesize}. Compressed Size: ${compressedFilesize}`);
-            await this.flashDeflBegin(uncompressedFilesize, compressedFilesize, offset);
+            timeout = await this.flashDeflBegin(uncompressedFilesize, compressedFilesize, offset);
         }
         else {
             this.logger.log(`Writing data with filesize: ${uncompressedFilesize}`);
@@ -475,7 +476,7 @@ export class ESPLoader extends EventTarget {
                 }
             }
             if (compress) {
-                await this.flashDeflBlock(block, seq);
+                await this.flashDeflBlock(block, seq, timeout);
             }
             else {
                 await this.flashBlock(block, seq);
@@ -509,7 +510,7 @@ export class ESPLoader extends EventTarget {
         await this.checkCommand(ESP_FLASH_DATA, pack("<IIII", data.length, seq, 0, 0).concat(data), this.checksum(data), timeout);
     }
     async flashDeflBlock(data, seq, timeout = DEFAULT_TIMEOUT) {
-        await this.checkCommand(ESP_FLASH_DEFL_DATA, pack("<IIII", data.length, seq, 0, 0).concat(data), this.checksum(data));
+        await this.checkCommand(ESP_FLASH_DEFL_DATA, pack("<IIII", data.length, seq, 0, 0).concat(data), this.checksum(data), timeout);
     }
     /**
      * @name flashBegin
@@ -580,7 +581,7 @@ export class ESPLoader extends EventTarget {
         let writeSize = 0;
         let timeout = 0;
         let buffer;
-        if (this.IS_STUB) {
+        if (!this.IS_STUB) {
             writeSize = size; // stub expects number of bytes here, manages erasing internally
             timeout = DEFAULT_TIMEOUT;
         }
@@ -590,7 +591,7 @@ export class ESPLoader extends EventTarget {
         }
         buffer = pack("<IIII", writeSize, numBlocks, flashWriteSize, offset);
         await this.checkCommand(ESP_FLASH_DEFL_BEGIN, buffer, 0, timeout);
-        return numBlocks;
+        return timeout;
     }
     async flashFinish() {
         let buffer = pack("<I", 1);

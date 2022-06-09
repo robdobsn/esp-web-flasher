@@ -178,7 +178,7 @@ export declare const ESP_FLASH_DEFL_END = 18;
 export declare const ROM_INVALID_RECV_MSG = 5;
 export declare const USB_RAM_BLOCK = 2048;
 export declare const ESP_RAM_BLOCK = 6144;
-export declare const DEFAULT_TIMEOUT = 30000;
+export declare const DEFAULT_TIMEOUT = 3000;
 export declare const CHIP_ERASE_TIMEOUT = 600000;
 export declare const MAX_TIMEOUT: number;
 export declare const SYNC_TIMEOUT = 100;

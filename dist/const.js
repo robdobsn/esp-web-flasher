@@ -138,7 +138,7 @@ export const ROM_INVALID_RECV_MSG = 0x05;
 export const USB_RAM_BLOCK = 0x800;
 export const ESP_RAM_BLOCK = 0x1800;
 // Timeouts
-export const DEFAULT_TIMEOUT = 30000;
+export const DEFAULT_TIMEOUT = 3000;
 export const CHIP_ERASE_TIMEOUT = 600000; // timeout for full chip erase in ms
 export const MAX_TIMEOUT = CHIP_ERASE_TIMEOUT * 2; // longest any command can run in ms
 export const SYNC_TIMEOUT = 100; // timeout for syncing with bootloader in ms
