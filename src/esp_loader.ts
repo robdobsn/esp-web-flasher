@@ -556,7 +556,7 @@ export class ESPLoader extends EventTarget {
     let compressedFilesize = 0;
 
     let dataToFlash;
-    let timeout = DEFAULT_TIMEOUT
+    let timeout = DEFAULT_TIMEOUT;
 
     if (compress) {
       dataToFlash = deflate(new Uint8Array(binaryData), {
